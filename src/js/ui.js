@@ -114,11 +114,12 @@ export function updateCurrentPlayer(player) {
 }
 
 // Render categories grid
-export function renderCategories(selectedCategory) {
+// When unlockAll is true (custom match mode), all categories are available
+export function renderCategories(selectedCategory, unlockAll = false) {
   const unlocks = getUnlocks();
 
   elements.categoriesGrid.innerHTML = CATEGORIES.map(cat => {
-    const isUnlocked = unlocks.includes(cat.id);
+    const isUnlocked = unlockAll || unlocks.includes(cat.id);
     const isSelected = cat.id === selectedCategory;
 
     return `

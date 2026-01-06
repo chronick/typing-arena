@@ -7,10 +7,15 @@ const STORAGE_KEYS = {
   THEME: 'typeracer_theme',
   SOUND: 'typeracer_sound',
   ACHIEVEMENTS: 'typeracer_achievements',
-  GAME_STATE: 'typeracer_game_state'
+  GAME_STATE: 'typeracer_game_state',
+  SETTINGS: 'typeracer_settings'
 };
 
 const DEFAULT_UNLOCKS = ['classics']; // First stage unlocked by default
+
+const DEFAULT_SETTINGS = {
+  backspaceMode: 'allowed' // 'allowed' or 'disabled'
+};
 
 export function getPlayers() {
   try {
@@ -212,4 +217,36 @@ export function loadGameState() {
 
 export function clearGameState() {
   localStorage.removeItem(STORAGE_KEYS.GAME_STATE);
+}
+
+// Settings management
+export function getSettings() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+    if (!data) return { ...DEFAULT_SETTINGS };
+    return { ...DEFAULT_SETTINGS, ...JSON.parse(data) };
+  } catch {
+    return { ...DEFAULT_SETTINGS };
+  }
+}
+
+export function saveSettings(settings) {
+  try {
+    const current = getSettings();
+    const updated = { ...current, ...settings };
+    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
+    return updated;
+  } catch (e) {
+    console.warn('Failed to save settings:', e);
+    return getSettings();
+  }
+}
+
+export function getSetting(key) {
+  const settings = getSettings();
+  return settings[key] ?? DEFAULT_SETTINGS[key];
+}
+
+export function setSetting(key, value) {
+  return saveSettings({ [key]: value });
 }

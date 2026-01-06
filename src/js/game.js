@@ -19,6 +19,10 @@ export class TypingGame {
     // Timer
     this.timerInterval = null;
     this.elapsedTime = 0;
+
+    // Settings
+    this.backspaceMode = 'allowed'; // 'allowed' or 'disabled'
+    this.previousInputLength = 0; // Track previous input length for backspace detection
   }
 
   // Initialize game with target text
@@ -32,11 +36,17 @@ export class TypingGame {
     this.incorrectChars = 0;
     this.currentIndex = 0;
     this.elapsedTime = 0;
+    this.previousInputLength = 0;
 
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
     }
+  }
+
+  // Set backspace mode ('allowed' or 'disabled')
+  setBackspaceMode(mode) {
+    this.backspaceMode = mode;
   }
 
   // Start the game
@@ -55,14 +65,22 @@ export class TypingGame {
   }
 
   // Process a keystroke
+  // Returns the text that should be in the input (for backspace enforcement)
   processInput(inputText) {
     // Start timer on first keystroke
     if (!this.startTime && inputText.length > 0) {
       this.start();
     }
 
-    if (!this.isActive) return;
+    if (!this.isActive) return inputText;
 
+    // Enforce backspace mode - if disabled and input got shorter, restore previous length
+    if (this.backspaceMode === 'disabled' && inputText.length < this.previousInputLength) {
+      // Return the previous typed text to restore it
+      return this.typedText;
+    }
+
+    this.previousInputLength = inputText.length;
     this.typedText = inputText;
     this.currentIndex = inputText.length;
 
@@ -93,20 +111,19 @@ export class TypingGame {
       this.onUpdate(this.getStats());
     }
 
-    // Check for completion - complete when typed length matches and accuracy is high
+    // Check for completion - complete when typed length matches target (errors allowed)
     if (inputText.length >= this.targetText.length) {
-      const accuracy = this.calculateAccuracy();
-      console.log('Completion check:', {
+      console.log('Completion:', {
         inputLen: inputText.length,
         targetLen: this.targetText.length,
         correctChars: this.correctChars,
-        accuracy: accuracy
+        incorrectChars: this.incorrectChars,
+        accuracy: this.calculateAccuracy()
       });
-      // Complete if we've typed enough and have good accuracy (allow for minor issues)
-      if (this.correctChars >= this.targetText.length || accuracy >= 98) {
-        this.complete();
-      }
+      this.complete();
     }
+
+    return inputText;
   }
 
   // Complete the game
