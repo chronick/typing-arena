@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypeRacer Arena - Test Suite</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: #1a1a2e;
+      color: #eaeaea;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    h1 { color: #e94560; margin-bottom: 1rem; }
+    h2 { color: #4ecca3; margin: 1.5rem 0 0.5rem; font-size: 1rem; }
+    .summary {
+      background: #16213e;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .summary.pass { border-left: 4px solid #4ecca3; }
+    .summary.fail { border-left: 4px solid #ff6b6b; }
+    .test-group { margin-bottom: 1rem; }
+    .test {
+      padding: 0.5rem 1rem;
+      margin: 0.25rem 0;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .test.pass { background: rgba(78, 204, 163, 0.1); }
+    .test.fail { background: rgba(255, 107, 107, 0.2); }
+    .test .status { font-weight: bold; }
+    .test.pass .status { color: #4ecca3; }
+    .test.fail .status { color: #ff6b6b; }
+    .error { color: #ff6b6b; font-size: 0.8rem; margin-left: 1rem; }
+    pre {
+      background: #0f0f1a;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+    }
+    .json-output { margin-top: 2rem; }
+    #json-result { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>TypeRacer Arena - Test Suite</h1>
+  <div id="summary" class="summary"></div>
+  <div id="results"></div>
+
+  <div class="json-output">
+    <h2>JSON Output (for curl)</h2>
+    <pre id="json-result"></pre>
+  </div>
+
+  <script type="module">
+    import { runAllTests } from './tests.js';
+
+    async function main() {
+      const results = await runAllTests();
+
+      // Render summary
+      const summaryEl = document.getElementById('summary');
+      const passed = results.tests.filter(t => t.passed).length;
+      const failed = results.tests.filter(t => !t.passed).length;
+      summaryEl.className = `summary ${failed === 0 ? 'pass' : 'fail'}`;
+      summaryEl.innerHTML = `
+        <strong>${results.passed ? '✓ ALL TESTS PASSED' : '✗ SOME TESTS FAILED'}</strong><br>
+        Passed: ${passed} | Failed: ${failed} | Total: ${results.tests.length}<br>
+        Duration: ${results.duration}ms
+      `;
+
+      // Render test results grouped
+      const resultsEl = document.getElementById('results');
+      const groups = {};
+      results.tests.forEach(t => {
+        const group = t.group || 'Other';
+        if (!groups[group]) groups[group] = [];
+        groups[group].push(t);
+      });
+
+      let html = '';
+      for (const [group, tests] of Object.entries(groups)) {
+        html += `<div class="test-group"><h2>${group}</h2>`;
+        tests.forEach(t => {
+          html += `
+            <div class="test ${t.passed ? 'pass' : 'fail'}">
+              <span>${t.name}</span>
+              <span class="status">${t.passed ? '✓ PASS' : '✗ FAIL'}</span>
+            </div>
+            ${t.error ? `<div class="error">${t.error}</div>` : ''}
+          `;
+        });
+        html += '</div>';
+      }
+      resultsEl.innerHTML = html;
+
+      // JSON output for curl
+      document.getElementById('json-result').textContent = JSON.stringify(results, null, 2);
+    }
+
+    main();
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test API</title>
+</head>
+<body>
+<pre id="output">Loading tests...</pre>
+<script type="module">
+  import { runAllTests } from './tests.js';
+
+  async function main() {
+    const results = await runAllTests();
+    // Output pure JSON for curl
+    document.getElementById('output').textContent = JSON.stringify(results, null, 2);
+    document.title = results.passed ? 'PASS' : 'FAIL';
+  }
+
+  main();
+</script>
+</body>
+</html>
