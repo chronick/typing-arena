@@ -13,6 +13,8 @@ class MockTypingGame {
     this.correctChars = 0;
     this.incorrectChars = 0;
     this.currentIndex = 0;
+    this.backspaceMode = 'allowed';
+    this.previousInputLength = 0;
   }
 
   init(text) {
@@ -24,6 +26,11 @@ class MockTypingGame {
     this.correctChars = 0;
     this.incorrectChars = 0;
     this.currentIndex = 0;
+    this.previousInputLength = 0;
+  }
+
+  setBackspaceMode(mode) {
+    this.backspaceMode = mode;
   }
 
   start() {
@@ -35,8 +42,14 @@ class MockTypingGame {
     if (!this.startTime && inputText.length > 0) {
       this.start();
     }
-    if (!this.isActive) return;
+    if (!this.isActive) return inputText;
 
+    // Enforce backspace mode
+    if (this.backspaceMode === 'disabled' && inputText.length < this.previousInputLength) {
+      return this.typedText;
+    }
+
+    this.previousInputLength = inputText.length;
     this.typedText = inputText;
     this.currentIndex = inputText.length;
     this.correctChars = 0;
@@ -52,12 +65,12 @@ class MockTypingGame {
       }
     }
 
+    // Complete when length matches (errors allowed)
     if (inputText.length >= this.targetText.length) {
-      const accuracy = this.calculateAccuracy();
-      if (this.correctChars >= this.targetText.length || accuracy >= 98) {
-        this.complete();
-      }
+      this.complete();
     }
+
+    return inputText;
   }
 
   complete() {
@@ -305,6 +318,86 @@ export function gameTests() {
       assertEqual(states[0].state, 'correct');
       assertEqual(states[1].state, 'incorrect');
       assertEqual(states[2].state, 'current');
+    });
+  });
+
+  describe('Game - Errors Allowed', () => {
+    test('game completes even with errors', () => {
+      const game = new MockTypingGame();
+      game.init('abc');
+      game.processInput('aXc');
+      logger.debug('completes with errors', { input: 'aXc', target: 'abc', isActive: game.isActive });
+      assertEqual(game.isActive, false, 'Game should complete even with errors');
+      assertEqual(game.incorrectChars, 1);
+    });
+
+    test('game completes with all wrong characters', () => {
+      const game = new MockTypingGame();
+      game.init('abc');
+      game.processInput('xyz');
+      logger.debug('completes all wrong', { input: 'xyz', target: 'abc', isActive: game.isActive });
+      assertEqual(game.isActive, false, 'Game should complete even with all errors');
+      assertEqual(game.incorrectChars, 3);
+      assertEqual(game.calculateAccuracy(), 0);
+    });
+
+    test('incorrect chars are tracked properly', () => {
+      const game = new MockTypingGame();
+      game.init('hello');
+      game.processInput('hXllX');
+      logger.debug('error tracking', { correctChars: game.correctChars, incorrectChars: game.incorrectChars });
+      assertEqual(game.correctChars, 3, 'Should have 3 correct chars');
+      assertEqual(game.incorrectChars, 2, 'Should have 2 incorrect chars');
+    });
+  });
+
+  describe('Game - Backspace Mode', () => {
+    test('setBackspaceMode() changes mode', () => {
+      const game = new MockTypingGame();
+      assertEqual(game.backspaceMode, 'allowed');
+      game.setBackspaceMode('disabled');
+      assertEqual(game.backspaceMode, 'disabled');
+    });
+
+    test('backspace allowed by default', () => {
+      const game = new MockTypingGame();
+      game.init('hello');
+      game.processInput('hel');
+      const result = game.processInput('he');
+      logger.debug('backspace allowed', { before: 'hel', after: result, typedText: game.typedText });
+      assertEqual(game.typedText, 'he', 'Backspace should work by default');
+    });
+
+    test('backspace disabled blocks deletion', () => {
+      const game = new MockTypingGame();
+      game.init('hello');
+      game.setBackspaceMode('disabled');
+      game.processInput('hel');
+      const result = game.processInput('he');
+      logger.debug('backspace disabled', { before: 'hel', attempted: 'he', result, typedText: game.typedText });
+      assertEqual(result, 'hel', 'Should return previous text when backspace blocked');
+      assertEqual(game.typedText, 'hel', 'typedText should not change');
+    });
+
+    test('backspace disabled allows forward typing', () => {
+      const game = new MockTypingGame();
+      game.init('hello');
+      game.setBackspaceMode('disabled');
+      game.processInput('hel');
+      game.processInput('hell');
+      logger.debug('forward typing allowed', { typedText: game.typedText, currentIndex: game.currentIndex });
+      assertEqual(game.typedText, 'hell', 'Forward typing should still work');
+    });
+
+    test('backspace disabled does not affect new game', () => {
+      const game = new MockTypingGame();
+      game.init('test');
+      game.setBackspaceMode('disabled');
+      game.processInput('te');
+      game.init('new'); // Reset game
+      assertEqual(game.previousInputLength, 0, 'previousInputLength should reset');
+      game.processInput('n');
+      assertEqual(game.typedText, 'n', 'First character should work');
     });
   });
 }

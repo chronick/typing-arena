@@ -82,6 +82,8 @@ class MockTypingGame {
     this.correctChars = 0;
     this.incorrectChars = 0;
     this.currentIndex = 0;
+    this.backspaceMode = 'allowed';
+    this.previousInputLength = 0;
   }
 
   init(text) {
@@ -92,6 +94,11 @@ class MockTypingGame {
     this.correctChars = 0;
     this.incorrectChars = 0;
     this.currentIndex = 0;
+    this.previousInputLength = 0;
+  }
+
+  setBackspaceMode(mode) {
+    this.backspaceMode = mode;
   }
 
   start() {
@@ -101,8 +108,14 @@ class MockTypingGame {
 
   processInput(inputText) {
     if (!this.startTime && inputText.length > 0) this.start();
-    if (!this.isActive) return;
+    if (!this.isActive) return inputText;
 
+    // Enforce backspace mode
+    if (this.backspaceMode === 'disabled' && inputText.length < this.previousInputLength) {
+      return this.typedText;
+    }
+
+    this.previousInputLength = inputText.length;
     this.typedText = inputText;
     this.currentIndex = inputText.length;
     this.correctChars = 0;
@@ -114,6 +127,18 @@ class MockTypingGame {
         else this.incorrectChars++;
       }
     }
+
+    // Complete when length matches (errors allowed)
+    if (inputText.length >= this.targetText.length) {
+      this.complete();
+    }
+
+    return inputText;
+  }
+
+  complete() {
+    this.isActive = false;
+    this.endTime = Date.now();
   }
 
   calculateWPM(chars, seconds) {
@@ -190,6 +215,50 @@ describe('Game - Accuracy', () => {
     game.init('abcd');
     game.processInput('abxx');
     assertEqual(game.calculateAccuracy(), 50);
+  });
+});
+
+describe('Game - Errors Allowed', () => {
+  test('game completes with errors', () => {
+    const game = new MockTypingGame();
+    game.init('abc');
+    game.processInput('aXc');
+    assertEqual(game.isActive, false);
+  });
+
+  test('game completes with all wrong characters', () => {
+    const game = new MockTypingGame();
+    game.init('abc');
+    game.processInput('xyz');
+    assertEqual(game.isActive, false);
+    assertEqual(game.incorrectChars, 3);
+  });
+});
+
+describe('Game - Backspace Mode', () => {
+  test('setBackspaceMode() changes mode', () => {
+    const game = new MockTypingGame();
+    assertEqual(game.backspaceMode, 'allowed');
+    game.setBackspaceMode('disabled');
+    assertEqual(game.backspaceMode, 'disabled');
+  });
+
+  test('backspace allowed by default', () => {
+    const game = new MockTypingGame();
+    game.init('hello');
+    game.processInput('hel');
+    game.processInput('he');
+    assertEqual(game.typedText, 'he');
+  });
+
+  test('backspace disabled blocks deletion', () => {
+    const game = new MockTypingGame();
+    game.init('hello');
+    game.setBackspaceMode('disabled');
+    game.processInput('hel');
+    const result = game.processInput('he');
+    assertEqual(result, 'hel');
+    assertEqual(game.typedText, 'hel');
   });
 });
 
@@ -382,6 +451,52 @@ describe('Players - Round Flow', () => {
     pm.recordScore(100);
     pm.startNextRound();
     assertEqual(pm.roundScores[0], null);
+  });
+});
+
+// ============================================================
+// SETTINGS TESTS
+// ============================================================
+
+class MockSettings {
+  constructor() {
+    this.data = {};
+    this.defaults = { backspaceMode: 'allowed' };
+  }
+
+  getSettings() {
+    return { ...this.defaults, ...this.data };
+  }
+
+  getSetting(key) {
+    return this.data[key] ?? this.defaults[key];
+  }
+
+  setSetting(key, value) {
+    this.data[key] = value;
+    return this.getSettings();
+  }
+}
+
+describe('Settings - Defaults', () => {
+  test('backspaceMode defaults to allowed', () => {
+    const s = new MockSettings();
+    assertEqual(s.getSetting('backspaceMode'), 'allowed');
+  });
+});
+
+describe('Settings - Persistence', () => {
+  test('setSetting() saves value', () => {
+    const s = new MockSettings();
+    s.setSetting('backspaceMode', 'disabled');
+    assertEqual(s.getSetting('backspaceMode'), 'disabled');
+  });
+
+  test('getSettings() returns all settings', () => {
+    const s = new MockSettings();
+    s.setSetting('backspaceMode', 'disabled');
+    const settings = s.getSettings();
+    assertEqual(settings.backspaceMode, 'disabled');
   });
 });
 

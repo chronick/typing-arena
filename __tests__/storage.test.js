@@ -28,7 +28,12 @@ function createStorageFunctions(storage) {
     UNLOCKS: 'typeracer_unlocks',
     HIGHSCORES: 'typeracer_highscores',
     THEME: 'typeracer_theme',
-    GAME_STATE: 'typeracer_game_state'
+    GAME_STATE: 'typeracer_game_state',
+    SETTINGS: 'typeracer_settings'
+  };
+
+  const DEFAULT_SETTINGS = {
+    backspaceMode: 'allowed'
   };
 
   return {
@@ -145,6 +150,36 @@ function createStorageFunctions(storage) {
 
     clearGameState() {
       storage.removeItem(KEYS.GAME_STATE);
+    },
+
+    getSettings() {
+      try {
+        const data = storage.getItem(KEYS.SETTINGS);
+        if (!data) return { ...DEFAULT_SETTINGS };
+        return { ...DEFAULT_SETTINGS, ...JSON.parse(data) };
+      } catch {
+        return { ...DEFAULT_SETTINGS };
+      }
+    },
+
+    saveSettings(settings) {
+      try {
+        const current = this.getSettings();
+        const updated = { ...current, ...settings };
+        storage.setItem(KEYS.SETTINGS, JSON.stringify(updated));
+        return updated;
+      } catch {
+        return this.getSettings();
+      }
+    },
+
+    getSetting(key) {
+      const settings = this.getSettings();
+      return settings[key] ?? DEFAULT_SETTINGS[key];
+    },
+
+    setSetting(key, value) {
+      return this.saveSettings({ [key]: value });
     }
   };
 }
@@ -335,6 +370,47 @@ export function storageTests() {
       s.saveGameState({ test: true });
       s.clearGameState();
       assertEqual(s.loadGameState(), null);
+    });
+  });
+
+  describe('Storage - Settings', () => {
+    test('getSettings() returns defaults initially', () => {
+      const storage = new MockStorage();
+      const s = createStorageFunctions(storage);
+      const settings = s.getSettings();
+      assertEqual(settings.backspaceMode, 'allowed');
+    });
+
+    test('getSetting() returns default value', () => {
+      const storage = new MockStorage();
+      const s = createStorageFunctions(storage);
+      assertEqual(s.getSetting('backspaceMode'), 'allowed');
+    });
+
+    test('setSetting() saves individual setting', () => {
+      const storage = new MockStorage();
+      const s = createStorageFunctions(storage);
+      s.setSetting('backspaceMode', 'disabled');
+      assertEqual(s.getSetting('backspaceMode'), 'disabled');
+    });
+
+    test('saveSettings() merges with existing', () => {
+      const storage = new MockStorage();
+      const s = createStorageFunctions(storage);
+      s.saveSettings({ backspaceMode: 'disabled' });
+      s.saveSettings({ newSetting: 'value' });
+      const settings = s.getSettings();
+      assertEqual(settings.backspaceMode, 'disabled');
+      assertEqual(settings.newSetting, 'value');
+    });
+
+    test('getSettings() preserves defaults for missing keys', () => {
+      const storage = new MockStorage();
+      const s = createStorageFunctions(storage);
+      storage.setItem('typeracer_settings', JSON.stringify({ customKey: 'value' }));
+      const settings = s.getSettings();
+      assertEqual(settings.backspaceMode, 'allowed', 'Default should be preserved');
+      assertEqual(settings.customKey, 'value');
     });
   });
 }
