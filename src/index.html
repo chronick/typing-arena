@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypeRacer Arena</title>
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>">
+</head>
+<body>
+  <div class="app">
+    <!-- Title Screen -->
+    <div id="screen-title" class="screen active">
+      <div class="container">
+        <header class="header">
+          <div class="logo">
+            <span class="logo-icon">⌨️</span>
+            <span>TypeRacer Arena</span>
+          </div>
+          <div class="header-actions">
+            <div class="theme-toggle">
+              <input type="checkbox" id="theme-switch">
+              <label for="theme-switch">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+              </label>
+            </div>
+          </div>
+        </header>
+      </div>
+      <div class="title-screen">
+        <div class="title-content">
+          <h1 class="title-logo">TypeRacer Arena</h1>
+          <p class="title-tagline">Test your typing skills against friends!</p>
+          <div class="title-actions">
+            <button class="btn btn-primary btn-lg" data-action="start-game">
+              Start Game
+            </button>
+            <button class="btn btn-secondary" data-action="view-stats">
+              View Stats
+            </button>
+          </div>
+          <p class="keyboard-hint">Press <kbd>Enter</kbd> to start</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player Setup Screen -->
+    <div id="screen-setup" class="screen">
+      <div class="container">
+        <header class="header">
+          <div class="logo">
+            <span class="logo-icon">⌨️</span>
+            <span>TypeRacer Arena</span>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-ghost" data-action="back-to-title">← Back</button>
+            <div class="theme-toggle">
+              <input type="checkbox" id="theme-switch-2">
+              <label for="theme-switch-2">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+              </label>
+            </div>
+          </div>
+        </header>
+      </div>
+      <div class="setup-screen">
+        <div class="setup-card">
+          <h2 class="setup-title">Player Setup</h2>
+
+          <div class="player-count">
+            <button class="btn btn-secondary" data-players="2">2 Players</button>
+            <button class="btn btn-secondary active" data-players="3">3 Players</button>
+            <button class="btn btn-secondary" data-players="4">4 Players</button>
+          </div>
+
+          <div class="player-inputs" id="player-inputs">
+            <div class="player-input-group">
+              <span class="player-number">1</span>
+              <input type="text" class="input" placeholder="Player 1 name" data-player="1" maxlength="15">
+            </div>
+            <div class="player-input-group">
+              <span class="player-number">2</span>
+              <input type="text" class="input" placeholder="Player 2 name" data-player="2" maxlength="15">
+            </div>
+            <div class="player-input-group">
+              <span class="player-number">3</span>
+              <input type="text" class="input" placeholder="Player 3 name" data-player="3" maxlength="15">
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-lg" style="width: 100%" data-action="go-to-mode">
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode Select Screen -->
+    <div id="screen-mode" class="screen">
+      <div class="container">
+        <header class="header">
+          <div class="logo">
+            <span class="logo-icon">⌨️</span>
+            <span>TypeRacer Arena</span>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-ghost" data-action="back-to-setup">← Back</button>
+            <div class="theme-toggle">
+              <input type="checkbox" id="theme-switch-3">
+              <label for="theme-switch-3">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+              </label>
+            </div>
+          </div>
+        </header>
+
+        <h2 class="text-center mb-4">Choose Game Mode</h2>
+
+        <div class="mode-cards">
+          <div class="mode-card" data-mode="quick">
+            <div class="mode-icon">⚡</div>
+            <h3 class="mode-title">Quick Play</h3>
+            <p class="mode-desc">Jump into a random text and compete!</p>
+          </div>
+          <div class="mode-card" data-mode="campaign">
+            <div class="mode-icon">🏆</div>
+            <h3 class="mode-title">Campaign</h3>
+            <p class="mode-desc">Progress through themed stages and unlock content</p>
+          </div>
+          <div class="mode-card" data-mode="custom">
+            <div class="mode-icon">🎮</div>
+            <h3 class="mode-title">Custom Match</h3>
+            <p class="mode-desc">Choose category, difficulty, and rounds</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Select Screen -->
+    <div id="screen-category" class="screen">
+      <div class="container">
+        <header class="header">
+          <div class="logo">
+            <span class="logo-icon">⌨️</span>
+            <span>TypeRacer Arena</span>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-ghost" data-action="back-to-mode">← Back</button>
+            <div class="theme-toggle">
+              <input type="checkbox" id="theme-switch-4">
+              <label for="theme-switch-4">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+              </label>
+            </div>
+          </div>
+        </header>
+
+        <h2 class="text-center mb-3">Select Category</h2>
+        <p class="text-center text-secondary mb-4" id="category-subtitle">Choose what you want to type</p>
+
+        <div class="categories-grid" id="categories-grid">
+          <!-- Categories will be populated by JS -->
+        </div>
+
+        <h2 class="text-center mb-3 mt-4">Select Difficulty</h2>
+
+        <div class="difficulty-options" id="difficulty-options">
+          <button class="difficulty-btn selected" data-difficulty="easy">
+            <div class="difficulty-name">Easy</div>
+            <div class="difficulty-desc">20-40 words</div>
+          </button>
+          <button class="difficulty-btn" data-difficulty="medium">
+            <div class="difficulty-name">Medium</div>
+            <div class="difficulty-desc">40-80 words</div>
+          </button>
+          <button class="difficulty-btn" data-difficulty="hard">
+            <div class="difficulty-name">Hard</div>
+            <div class="difficulty-desc">80-120 words</div>
+          </button>
+          <button class="difficulty-btn" data-difficulty="expert">
+            <div class="difficulty-name">Expert</div>
+            <div class="difficulty-desc">120+ words</div>
+          </button>
+        </div>
+
+        <div class="text-center mt-4">
+          <button class="btn btn-primary btn-lg" data-action="start-round">
+            Start Round
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="screen-game" class="screen game-screen">
+      <div class="container">
+        <div class="game-header">
+          <div class="game-info">
+            <div class="info-item">
+              <div class="info-label">WPM</div>
+              <div class="info-value wpm" id="live-wpm">0</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Accuracy</div>
+              <div class="info-value accuracy" id="live-accuracy">100%</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Time</div>
+              <div class="info-value" id="live-time">0:00</div>
+            </div>
+          </div>
+          <div class="current-player">
+            <div class="player-avatar" id="current-avatar">P1</div>
+            <div>
+              <div class="player-name" id="current-player-name">Player 1</div>
+              <div class="player-turn-label">Now typing</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="typing-container">
+          <div class="game-prompt" id="game-prompt">
+            <span class="prompt-icon">⌨️</span>
+            <span class="prompt-text">Start typing to begin...</span>
+          </div>
+          <div class="text-display" id="text-display">
+            <!-- Characters will be populated by JS -->
+          </div>
+          <input
+            type="text"
+            class="typing-input"
+            id="typing-input"
+            placeholder="Type here..."
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+          >
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-text">
+              <span id="chars-typed">0</span> / <span id="chars-total">0</span> characters
+              <span class="source-text" id="source-text"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="screen-results" class="screen results-screen">
+      <div class="container">
+        <header class="header">
+          <div class="logo">
+            <span class="logo-icon">⌨️</span>
+            <span>TypeRacer Arena</span>
+          </div>
+          <div class="header-actions">
+            <div class="theme-toggle">
+              <input type="checkbox" id="theme-switch-5">
+              <label for="theme-switch-5">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+              </label>
+            </div>
+          </div>
+        </header>
+
+        <div class="results-card">
+          <h2 class="results-title" id="results-title">Round Complete!</h2>
+          <p class="results-subtitle" id="results-subtitle">Round 1 of 3</p>
+
+          <div class="scoreboard" id="scoreboard">
+            <!-- Scores will be populated by JS -->
+          </div>
+
+          <div class="xp-gain" id="xp-section">
+            <div class="xp-title">XP Earned This Round</div>
+            <div class="xp-amount" id="xp-earned">+250 XP</div>
+            <div class="xp-bar">
+              <div class="xp-fill" id="xp-fill" style="width: 60%"></div>
+            </div>
+          </div>
+
+          <div class="results-actions">
+            <button class="btn btn-primary btn-lg" data-action="next-round" id="btn-next-round">
+              Next Round
+            </button>
+            <button class="btn btn-secondary" data-action="back-to-title">
+              Main Menu
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Countdown Overlay -->
+    <div class="countdown-overlay" id="countdown-overlay">
+      <div class="countdown-number" id="countdown-number">3</div>
+    </div>
+
+    <!-- Turn Complete Modal -->
+    <div class="modal-overlay" id="turn-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-icon" id="modal-icon">✓</div>
+          <h2 class="modal-title" id="modal-title">Turn Complete!</h2>
+          <p class="modal-subtitle" id="modal-subtitle">Great job, Player 1!</p>
+        </div>
+
+        <div class="stats-breakdown">
+          <div class="stat-row">
+            <span class="stat-label">Words Per Minute</span>
+            <span class="stat-value" id="modal-wpm">67</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Accuracy</span>
+            <span class="stat-value" id="modal-accuracy">98%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Time</span>
+            <span class="stat-value" id="modal-time">1:14</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-row highlight">
+            <span class="stat-label">Base Score</span>
+            <span class="stat-value" id="modal-base-score">670</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Accuracy Bonus</span>
+            <span class="stat-value" id="modal-accuracy-bonus">+196</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Time Bonus</span>
+            <span class="stat-value" id="modal-time-bonus">+23</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Difficulty Multiplier</span>
+            <span class="stat-value" id="modal-difficulty-mult">×1.5</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-row total">
+            <span class="stat-label">Total Score</span>
+            <span class="stat-value" id="modal-total-score">1,334</span>
+          </div>
+        </div>
+
+        <div class="xp-gain-mini">
+          <span class="xp-label">+<span id="modal-xp">98</span> XP</span>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-primary btn-lg" id="modal-continue-btn" data-action="modal-continue">
+            Next Player
+          </button>
+        </div>
+
+        <p class="modal-hint" id="modal-hint">Press Enter to continue</p>
+      </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confetti-container"></div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

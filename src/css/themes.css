@@ -1,0 +1,68 @@
+/* TypeRacer Arena - Theme System */
+
+:root {
+  /* Dark theme (default) */
+  --bg-primary: #0f0f1a;
+  --bg-secondary: #1a1a2e;
+  --bg-surface: #16213e;
+  --bg-elevated: #1f2940;
+
+  --text-primary: #eaeaea;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
+
+  --accent-primary: #e94560;
+  --accent-secondary: #0f3460;
+  --accent-tertiary: #533483;
+
+  --success: #4ecca3;
+  --error: #ff6b6b;
+  --warning: #ffd93d;
+  --info: #6bcbff;
+
+  --gradient-primary: linear-gradient(135deg, #e94560 0%, #533483 100%);
+  --gradient-secondary: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+  --gradient-success: linear-gradient(135deg, #4ecca3 0%, #2d8f6f 100%);
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(233, 69, 96, 0.3);
+
+  --border-radius-sm: 6px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 20px;
+  --border-radius-full: 9999px;
+
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f0f2f5;
+  --bg-secondary: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f8f9fa;
+
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a5568;
+  --text-muted: #a0aec0;
+
+  --accent-primary: #e94560;
+  --accent-secondary: #3498db;
+  --accent-tertiary: #9b59b6;
+
+  --success: #27ae60;
+  --error: #e74c3c;
+  --warning: #f39c12;
+  --info: #3498db;
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+  --shadow-glow: 0 0 20px rgba(233, 69, 96, 0.2);
+}
