@@ -1,0 +1,27 @@
+{
+  "name": "typing-arena",
+  "version": "1.0.0",
+  "description": "A fun, local multiplayer typing competition game with progression systems and themed content",
+  "type": "module",
+  "scripts": {
+    "start": "make serve",
+    "serve": "make serve",
+    "test": "node __tests__/run-tests.js",
+    "test:json": "node __tests__/run-tests.js --json",
+    "test:browser": "make serve-test"
+  },
+  "keywords": [
+    "typing",
+    "game",
+    "multiplayer",
+    "wpm",
+    "typing-test"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "homepage": ""
+}
