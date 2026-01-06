@@ -54,6 +54,53 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ==================== Reusable Components ==================== */
+
+/* Centered screen layout - for screens with a single centered card */
+.centered-screen {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+/* Generic card component */
+.card {
+  background: var(--bg-surface);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+}
+
+.card--sm { max-width: 420px; }
+.card--md { max-width: 540px; }
+.card--lg { max-width: 600px; }
+
+.card__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.card__actions .btn {
+  width: 100%;
+}
+
+.card__actions .keyboard-hint {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
 /* ==================== Header ==================== */
 
 .header {
@@ -158,9 +205,9 @@ body {
 
 /* ==================== Title Screen ==================== */
 
+/* Uses .centered-screen utility */
+
 .title-screen {
-  justify-content: center;
-  align-items: center;
   text-align: center;
 }
 
@@ -215,35 +262,24 @@ kbd {
 
 /* ==================== Player Setup ==================== */
 
-.setup-screen {
-  align-items: center;
-  padding-top: 4rem;
-}
+/* Uses .centered-screen and .card utilities */
 
 .setup-card {
-  background: var(--bg-surface);
-  border-radius: var(--border-radius-lg);
   padding: 2.5rem;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: var(--shadow-lg);
-}
-
-.setup-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-  text-align: center;
 }
 
 .player-count {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.5rem;
   margin-bottom: 2rem;
 }
 
 .player-count .btn {
-  flex: 1;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  min-width: 100px;
 }
 
 .player-count .btn.active {
@@ -315,12 +351,15 @@ kbd {
   cursor: pointer;
   transition: all var(--transition-normal);
   border: 2px solid transparent;
+  position: relative;
 }
 
-.mode-card:hover {
+.mode-card:hover,
+.mode-card:focus {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
   border-color: var(--accent-primary);
+  outline: none;
 }
 
 .mode-card.selected {
@@ -342,6 +381,23 @@ kbd {
 .mode-desc {
   color: var(--text-secondary);
   font-size: 0.9rem;
+}
+
+.mode-key {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 /* ==================== Category Select ==================== */
@@ -677,18 +733,10 @@ kbd {
 
 /* ==================== Results Screen ==================== */
 
-.results-screen {
-  align-items: center;
-  padding-top: 3rem;
-}
+/* Uses .centered-screen and .card utilities */
 
 .results-card {
-  background: var(--bg-surface);
-  border-radius: var(--border-radius-lg);
   padding: 2.5rem;
-  width: 100%;
-  max-width: 600px;
-  box-shadow: var(--shadow-lg);
   text-align: center;
 }
 
@@ -1081,6 +1129,58 @@ kbd {
   margin-top: 1rem;
   color: var(--text-muted);
   font-size: 0.8rem;
+}
+
+/* ==================== Settings Modal ==================== */
+
+.settings-modal {
+  max-width: 480px;
+}
+
+.settings-list {
+  margin-bottom: 1.5rem;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.setting-info {
+  flex: 1;
+}
+
+.setting-name {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.setting-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.setting-select {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--bg-surface);
+  border: 2px solid var(--bg-elevated);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.setting-select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
 }
 
 /* ==================== Utilities ==================== */
