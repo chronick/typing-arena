@@ -29,7 +29,7 @@
           </div>
         </header>
       </div>
-      <div class="title-screen">
+      <div class="title-screen centered-screen">
         <div class="title-content">
           <h1 class="title-logo">TypeRacer Arena</h1>
           <p class="title-tagline">Test your typing skills against friends!</p>
@@ -39,6 +39,9 @@
             </button>
             <button class="btn btn-secondary" data-action="view-stats">
               View Stats
+            </button>
+            <button class="btn btn-ghost" data-action="open-settings">
+              Settings
             </button>
           </div>
           <p class="keyboard-hint">Press <kbd>Enter</kbd> to start</p>
@@ -66,20 +69,21 @@
           </div>
         </header>
       </div>
-      <div class="setup-screen">
-        <div class="setup-card">
-          <h2 class="setup-title">Player Setup</h2>
+      <div class="setup-screen centered-screen">
+        <div class="setup-card card card--md">
+          <h2 class="card__title">Player Setup</h2>
 
           <div class="player-count">
+            <button class="btn btn-secondary active" data-players="1">1 Player</button>
             <button class="btn btn-secondary" data-players="2">2 Players</button>
-            <button class="btn btn-secondary active" data-players="3">3 Players</button>
+            <button class="btn btn-secondary" data-players="3">3 Players</button>
             <button class="btn btn-secondary" data-players="4">4 Players</button>
           </div>
 
           <div class="player-inputs" id="player-inputs">
             <div class="player-input-group">
               <span class="player-number">1</span>
-              <input type="text" class="input" placeholder="Player 1 name" data-player="1" maxlength="15">
+              <input type="text" class="input" placeholder="Player 1 name" data-player="1" maxlength="15" value="Player 1">
             </div>
             <div class="player-input-group">
               <span class="player-number">2</span>
@@ -89,11 +93,18 @@
               <span class="player-number">3</span>
               <input type="text" class="input" placeholder="Player 3 name" data-player="3" maxlength="15">
             </div>
+            <div class="player-input-group">
+              <span class="player-number">4</span>
+              <input type="text" class="input" placeholder="Player 4 name" data-player="4" maxlength="15">
+            </div>
           </div>
 
-          <button class="btn btn-primary btn-lg" style="width: 100%" data-action="go-to-mode">
-            Continue
-          </button>
+          <div class="card__actions">
+            <button class="btn btn-primary btn-lg" data-action="go-to-mode">
+              Continue
+            </button>
+            <p class="keyboard-hint">Press <kbd>Enter</kbd> to continue</p>
+          </div>
         </div>
       </div>
     </div>
@@ -121,22 +132,26 @@
         <h2 class="text-center mb-4">Choose Game Mode</h2>
 
         <div class="mode-cards">
-          <div class="mode-card" data-mode="quick">
+          <div class="mode-card" data-mode="quick" tabindex="0">
             <div class="mode-icon">⚡</div>
             <h3 class="mode-title">Quick Play</h3>
             <p class="mode-desc">Jump into a random text and compete!</p>
+            <span class="mode-key">1</span>
           </div>
-          <div class="mode-card" data-mode="campaign">
+          <div class="mode-card" data-mode="campaign" tabindex="0">
             <div class="mode-icon">🏆</div>
             <h3 class="mode-title">Campaign</h3>
             <p class="mode-desc">Progress through themed stages and unlock content</p>
+            <span class="mode-key">2</span>
           </div>
-          <div class="mode-card" data-mode="custom">
+          <div class="mode-card" data-mode="custom" tabindex="0">
             <div class="mode-icon">🎮</div>
             <h3 class="mode-title">Custom Match</h3>
             <p class="mode-desc">Choose category, difficulty, and rounds</p>
+            <span class="mode-key">3</span>
           </div>
         </div>
+        <p class="keyboard-hint text-center">Press <kbd>Enter</kbd> for Quick Play or <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to select</p>
       </div>
     </div>
 
@@ -255,25 +270,8 @@
     </div>
 
     <!-- Results Screen -->
-    <div id="screen-results" class="screen results-screen">
-      <div class="container">
-        <header class="header">
-          <div class="logo">
-            <span class="logo-icon">⌨️</span>
-            <span>TypeRacer Arena</span>
-          </div>
-          <div class="header-actions">
-            <div class="theme-toggle">
-              <input type="checkbox" id="theme-switch-5">
-              <label for="theme-switch-5">
-                <span class="icon-sun">☀️</span>
-                <span class="icon-moon">🌙</span>
-              </label>
-            </div>
-          </div>
-        </header>
-
-        <div class="results-card">
+    <div id="screen-results" class="screen centered-screen">
+      <div class="results-card card card--lg">
           <h2 class="results-title" id="results-title">Round Complete!</h2>
           <p class="results-subtitle" id="results-subtitle">Round 1 of 3</p>
 
@@ -297,7 +295,6 @@
               Main Menu
             </button>
           </div>
-        </div>
       </div>
     </div>
 
@@ -368,6 +365,36 @@
 
     <!-- Confetti Container -->
     <div class="confetti-container" id="confetti-container"></div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal">
+      <div class="modal-card settings-modal">
+        <div class="modal-header">
+          <h2 class="modal-title">Settings</h2>
+        </div>
+
+        <div class="settings-list">
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-name">Backspace Mode</div>
+              <div class="setting-desc">Control whether you can go back to fix mistakes</div>
+            </div>
+            <div class="setting-control">
+              <select id="setting-backspace" class="setting-select">
+                <option value="allowed">Allowed</option>
+                <option value="disabled">Forward Only</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-primary" data-action="close-settings">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="js/app.js"></script>

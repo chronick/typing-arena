@@ -4,13 +4,13 @@ import { typingGame } from './game.js';
 import { playerManager } from './players.js';
 import { getText, getRandomText, CATEGORIES } from './content.js';
 import { calculateXP, calculateScore, getLevelProgress, checkAchievements, getAchievementById } from './levels.js';
-import { getTheme, saveTheme, getUnlocks, updatePlayerXP, updatePlayerStats, checkLevelUnlocks, getAchievements, addAchievement } from './storage.js';
+import { getTheme, saveTheme, getUnlocks, updatePlayerXP, updatePlayerStats, checkLevelUnlocks, getAchievements, addAchievement, getSetting, setSetting } from './storage.js';
 import * as UI from './ui.js';
 
 // App State
 const state = {
   currentScreen: 'title',
-  playerCount: 3,
+  playerCount: 1,
   gameMode: 'quick', // quick, campaign, custom
   selectedCategory: 'classics',
   selectedDifficulty: 'medium',
@@ -127,6 +127,12 @@ function handleAction(e) {
     case 'modal-continue':
       handleModalContinue();
       break;
+    case 'open-settings':
+      openSettings();
+      break;
+    case 'close-settings':
+      closeSettings();
+      break;
   }
 }
 
@@ -181,6 +187,9 @@ function selectMode(mode) {
     state.selectedDifficulty = 'medium';
     startRound();
   } else {
+    // For custom mode, unlock all categories
+    const unlockAll = mode === 'custom';
+    UI.renderCategories(state.selectedCategory, unlockAll);
     navigateTo('category');
   }
 }
@@ -188,7 +197,8 @@ function selectMode(mode) {
 // Select category
 function selectCategory(categoryId) {
   state.selectedCategory = categoryId;
-  UI.renderCategories(categoryId);
+  const unlockAll = state.gameMode === 'custom';
+  UI.renderCategories(categoryId, unlockAll);
 }
 
 // Select difficulty
@@ -213,6 +223,9 @@ async function startRound() {
 
   // Initialize game
   typingGame.init(state.currentText.text);
+
+  // Apply settings
+  typingGame.setBackspaceMode(getSetting('backspaceMode'));
 
   // Set up game callbacks
   typingGame.onUpdate = (stats) => {
@@ -256,7 +269,12 @@ function handleTypingInput(e) {
     UI.showGamePrompt(false);
   }
 
-  typingGame.processInput(value);
+  // processInput returns what the value should be (handles backspace blocking)
+  const correctedValue = typingGame.processInput(value);
+  if (correctedValue !== value) {
+    // Backspace was blocked - restore the input value
+    e.target.value = correctedValue;
+  }
 }
 
 // Handle round completion for current player
@@ -373,6 +391,9 @@ async function startPlayerTurn() {
   // Reset game with same text
   typingGame.init(state.currentText.text);
 
+  // Apply settings
+  typingGame.setBackspaceMode(getSetting('backspaceMode'));
+
   // Re-register game callbacks
   typingGame.onUpdate = (stats) => {
     UI.updateLiveStats(stats);
@@ -446,6 +467,15 @@ function handleNextRound() {
 
 // Handle keyboard shortcuts
 function handleKeydown(e) {
+  // Handle settings modal
+  if (isSettingsOpen()) {
+    if (e.key === 'Escape' || e.key === 'Enter') {
+      e.preventDefault();
+      closeSettings();
+    }
+    return;
+  }
+
   // Enter to dismiss modal
   if (e.key === 'Enter' && UI.isModalOpen()) {
     e.preventDefault();
@@ -455,13 +485,55 @@ function handleKeydown(e) {
 
   // Enter on title screen starts game
   if (state.currentScreen === 'title' && e.key === 'Enter') {
+    e.preventDefault();
     navigateTo('setup');
+    return;
   }
 
-  // Enter in setup continues to mode select
-  if (state.currentScreen === 'setup' && e.key === 'Enter' && e.target.tagName !== 'INPUT') {
+  // Enter in setup continues to mode select (works even in input fields)
+  if (state.currentScreen === 'setup' && e.key === 'Enter') {
+    e.preventDefault();
     initializePlayers();
     navigateTo('mode');
+    return;
+  }
+
+  // Enter on mode screen selects Quick Play
+  if (state.currentScreen === 'mode' && e.key === 'Enter') {
+    e.preventDefault();
+    selectMode('quick');
+    return;
+  }
+
+  // Number keys on mode screen: 1=Quick, 2=Campaign, 3=Custom
+  if (state.currentScreen === 'mode') {
+    if (e.key === '1') {
+      e.preventDefault();
+      selectMode('quick');
+      return;
+    } else if (e.key === '2') {
+      e.preventDefault();
+      selectMode('campaign');
+      return;
+    } else if (e.key === '3') {
+      e.preventDefault();
+      selectMode('custom');
+      return;
+    }
+  }
+
+  // Enter on category screen starts round
+  if (state.currentScreen === 'category' && e.key === 'Enter') {
+    e.preventDefault();
+    startRound();
+    return;
+  }
+
+  // Enter on results screen goes to next round
+  if (state.currentScreen === 'results' && e.key === 'Enter') {
+    e.preventDefault();
+    handleNextRound();
+    return;
   }
 
   // Escape returns to previous screen
@@ -487,6 +559,31 @@ function handleKeydown(e) {
         break;
     }
   }
+}
+
+// Settings management
+function openSettings() {
+  const settingsModal = document.getElementById('settings-modal');
+  const backspaceSelect = document.getElementById('setting-backspace');
+
+  // Load current setting
+  backspaceSelect.value = getSetting('backspaceMode');
+
+  settingsModal.classList.add('active');
+}
+
+function closeSettings() {
+  const settingsModal = document.getElementById('settings-modal');
+  const backspaceSelect = document.getElementById('setting-backspace');
+
+  // Save setting
+  setSetting('backspaceMode', backspaceSelect.value);
+
+  settingsModal.classList.remove('active');
+}
+
+function isSettingsOpen() {
+  return document.getElementById('settings-modal')?.classList.contains('active');
 }
 
 // Show notification (simple alert for now, could be improved)
