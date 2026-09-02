@@ -91,6 +91,6 @@ totalScore = (baseScore + accuracyBonus + timeBonus) * difficultyMultiplier
 
 ## URLs
 
-- **Live**: https://chronick.github.io/typing-arena/
-- **Tests**: https://chronick.github.io/typing-arena/__tests__/
-- **Repo**: https://github.com/chronick/typing-arena
+- **Live**: https://algonormative.github.io/typing-arena/
+- **Tests**: https://algonormative.github.io/typing-arena/__tests__/
+- **Repo**: https://github.com/algonormative/typing-arena
